@@ -3,29 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PSX Emulator</title>
+  <title>PS1 Web App</title>
   <style>
-    body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; }
-    #game { width: 100vw; height: 100vh; }
+    body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #111; color: #fff; font-family: sans-serif; }
+    #top-bar { height: 45px; background: #222; display: flex; align-items: center; justify-content: center; gap: 10px; border-bottom: 1px solid #444; }
+    #game { width: 100vw; height: calc(100vh - 45px); }
   </style>
 </head>
 <body>
 
+  <div id="top-bar">
+    <label for="rom-file"><b>Select Game File:</b> </label>
+    <input type="file" id="rom-file" accept=".chd,.iso,.bin,.pbp,.cue">
+  </div>
+
   <div id="game"></div>
 
   <script type="text/javascript">
-      EJS_player = '#game';
-      EJS_core = 'pcsx_rearmed';
-      
-      // Point directly to the emulator folder in your repo
-      EJS_pathtodata = './emulator/';
-      
-      // Keep gameUrl blank to allow manual file picking
-      EJS_gameUrl = ''; 
+      document.getElementById('rom-file').addEventListener('change', function(e) {
+          const file = e.target.files[0];
+          if (!file) return;
+
+          // Pass the local file directly into EmulatorJS
+          EJS_player = '#game';
+          EJS_core = 'pcsx_rearmed';
+          EJS_pathtodata = './emulator/';
+          EJS_gameUrl = URL.createObjectURL(file);
+
+          // Inject loader.js only AFTER a file is selected
+          const loaderScript = document.createElement('script');
+          loaderScript.src = './emulator/loader.js';
+          document.body.appendChild(loaderScript);
+      });
   </script>
-  
-  <!-- Load your locally hosted loader.js -->
-  <script src="./emulator/loader.js"></script>
 
 </body>
 </html>
